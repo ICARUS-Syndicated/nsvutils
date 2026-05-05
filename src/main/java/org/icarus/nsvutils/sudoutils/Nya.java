@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class Nya {
     public static String nya(){
-        List<Object> words = List.of("呜呜",
+        List<String> words = List.of("呜呜",
                 "嘻嘻",
                 "摸鱼",
                 "喵喵",
@@ -31,7 +31,7 @@ public class Nya {
 
         Random rand = new Random();
         int index = rand.nextInt(words.size());
-        String elem = (String) words.get(index);
+        String elem = words.get(index);
         return meow + "\n" + "你今天" + elem + "了吗?";
     }
 }
