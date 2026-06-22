@@ -12,6 +12,7 @@ public class KeypairTable {
             PreparedStatement statement = conn.prepareStatement("""
                     CREATE TABLE IF NOT EXISTS keypair(
                       uuid TINYTEXT NOT NULL,
+                      operator_name VARCHAR(255) NOT NULL,
                       passkey MEDIUMTEXT NOT NULL
                     );""");
             statement.executeUpdate();

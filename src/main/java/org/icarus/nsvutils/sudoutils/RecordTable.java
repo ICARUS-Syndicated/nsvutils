@@ -24,13 +24,13 @@ public class RecordTable {
         }
     }
 
-    public static void addEntry(Connection conn, Entry entry) {
+    public static void addEntry(Connection conn, String time, UUID user_uuid, String player_name, String command) {
         try {
             PreparedStatement statement = conn.prepareStatement("INSERT INTO entries VALUES(?,?,?,?)");
-            statement.setString(1, entry.time);
-            statement.setString(2, String.valueOf(entry.user_uuid));
-            statement.setString(3, entry.player_name);
-            statement.setString(4, entry.command);
+            statement.setString(1, time);
+            statement.setString(2, String.valueOf(user_uuid));
+            statement.setString(3, player_name);
+            statement.setString(4, command);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Something went wrong while inserting data.");
