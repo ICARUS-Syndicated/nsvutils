@@ -2,12 +2,11 @@ package org.icarus.nsvutils.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.sqlite.SQLiteDataSource;
 
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import org.sqlite.SQLiteDataSource;
 
 public class SQLiteConnector {
     public static HikariDataSource database;
@@ -42,7 +41,7 @@ public class SQLiteConnector {
         return database.getConnection();
     }
 
-    public void close(){
+    public void close() {
         database.close();
     }
 }
