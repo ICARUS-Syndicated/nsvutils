@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
+@SuppressWarnings("unused")
 public class Utils {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
@@ -19,11 +20,11 @@ public class Utils {
         return String.valueOf(LocalDate.now());
     }
 
-    public static String serializeItemStack(ItemStack item_stack) {
-        return Base64.getEncoder().encodeToString(item_stack.serializeAsBytes());
+    public static String serializeItemStack(ItemStack itemStack) {
+        return Base64.getEncoder().encodeToString(itemStack.serializeAsBytes());
     }
 
-    public static ItemStack deserializeItemStack(String base64code) {
-        return ItemStack.deserializeBytes(Base64.getDecoder().decode(base64code));
+    public static ItemStack deserializeItemStack(String encoded) {
+        return ItemStack.deserializeBytes(Base64.getDecoder().decode(encoded));
     }
 }

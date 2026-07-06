@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class RecordTable {
     public static void recordTableInit(Connection conn) {
         try {
@@ -50,10 +51,11 @@ public class RecordTable {
                             resultSet.getString("command")
                     );
                 }
-                return (String[]) entries.toArray();
+
+                return entries.toArray(new String[0]);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Something went wrong while getting keypair.");
+            throw new RuntimeException("Something went wrong while getting keypair.", e);
         }
     }
 }

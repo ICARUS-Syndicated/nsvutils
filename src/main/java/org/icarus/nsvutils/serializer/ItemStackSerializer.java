@@ -1,23 +1,20 @@
 package org.icarus.nsvutils.serializer;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.bukkit.inventory.ItemStack;
-
-import java.lang.reflect.Type;
-import java.util.Base64;
-
 import org.icarus.nsvutils.Utils;
 
-public class ItemStackSerializer implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
-    @Override
-    public JsonElement serialize(ItemStack item_stack, Type type, JsonSerializationContext context) {
+@SuppressWarnings("unused")
+public class ItemStackSerializer {
+    public static JsonElement serialize(ItemStack itemStack) {
         JsonObject json = new JsonObject();
-        json.addProperty("item", Utils.serializeItemStack(item_stack));
+        json.addProperty("item", Utils.serializeItemStack(itemStack));
         return json;
     }
 
-    @Override
-    public ItemStack deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+    public static ItemStack deserialize(JsonElement json) throws JsonParseException {
         JsonObject obj = json.getAsJsonObject();
         return Utils.deserializeItemStack(obj.get("data").toString());
     }

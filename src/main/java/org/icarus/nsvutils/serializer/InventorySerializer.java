@@ -1,18 +1,19 @@
 package org.icarus.nsvutils.serializer;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.icarus.nsvutils.Utils;
 
-import java.lang.reflect.Type;
-import java.util.Base64;
 import java.util.Map;
 
-public class InventorySerializer implements JsonSerializer<Inventory>, JsonDeserializer<Inventory> {
-    @Override
-    public JsonElement serialize(Inventory inventory, Type type, JsonSerializationContext jsonSerializationContext) {
+@SuppressWarnings("unused")
+public class InventorySerializer {
+    public static JsonElement serialize(Inventory inventory) {
         JsonObject root = new JsonObject();
         root.addProperty("type", inventory.getType().name());
 
@@ -25,7 +26,7 @@ public class InventorySerializer implements JsonSerializer<Inventory>, JsonDeser
         for (int i = 0; i < contents.length; i++) {
             ItemStack stack = contents[i];
             if (stack != null && !stack.getType().isAir()) {
-                slots.addProperty(String.valueOf(i), Base64.getEncoder().encodeToString(stack.serializeAsBytes()));
+                slots.addProperty(String.valueOf(i), Utils.serializeItemStack(stack));
             }
         }
 
@@ -34,8 +35,7 @@ public class InventorySerializer implements JsonSerializer<Inventory>, JsonDeser
     }
 
 
-    @Override
-    public Inventory deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public static Inventory deserialize(JsonElement json) throws JsonParseException {
         JsonObject root = json.getAsJsonObject();
         Inventory inventory;
 
@@ -49,8 +49,8 @@ public class InventorySerializer implements JsonSerializer<Inventory>, JsonDeser
 
         JsonObject slots = root.getAsJsonObject("slots");
         for (Map.Entry<String, JsonElement> entry : slots.entrySet()) {
-            inventory.setItem(Integer.parseInt(entry.getKey()), ItemStack.deserializeBytes(Base64.getDecoder()
-                    .decode(entry.getValue().getAsString())));
+            inventory.setItem(Integer.parseInt(entry.getKey()), Utils.deserializeItemStack(entry.getValue()
+                    .getAsString()));
         }
 
         return inventory;

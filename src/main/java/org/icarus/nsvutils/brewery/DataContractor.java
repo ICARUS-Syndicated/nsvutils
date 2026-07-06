@@ -16,6 +16,7 @@ import java.util.*;
 import static java.lang.Math.log;
 import static java.lang.Math.min;
 
+@SuppressWarnings("unused")
 public class DataContractor {
     public static @Nullable Brew getBrew(ItemStack item) {
         return Brew.get(item);
@@ -31,7 +32,7 @@ public class DataContractor {
     }
 
     public static double getAgingTime(Brew brew) {
-        return (double) brew.getAgeTime();
+        return brew.getAgeTime();
     }
 
     // 单位为分钟
@@ -40,7 +41,7 @@ public class DataContractor {
     }
 
     public static int getDistillRun(Brew brew) {
-        return (int) brew.getDistillRuns();
+        return brew.getDistillRuns();
     }
 
     // 如果不存在，那么 distill_time 就是0

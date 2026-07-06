@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class KeypairTable {
     public static void keypairTableInit(Connection conn) {
         try {
