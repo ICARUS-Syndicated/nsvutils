@@ -2,17 +2,17 @@ package org.icarus.nsvutils.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.sqlite.SQLiteDataSource;
 
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.sqlite.SQLiteDataSource;
-
+@SuppressWarnings("unused")
 public class SQLiteConnector {
     public static HikariDataSource database;
 
-    public void initialize(String path) throws SQLException {
+    public void initialize(String path) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.sqlite.JDBC");
         config.setPoolName("NSV-SQLite");
@@ -42,7 +42,7 @@ public class SQLiteConnector {
         return database.getConnection();
     }
 
-    public void close(){
+    public void close() {
         database.close();
     }
 }

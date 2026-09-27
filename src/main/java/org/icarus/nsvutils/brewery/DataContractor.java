@@ -2,8 +2,10 @@ package org.icarus.nsvutils.brewery;
 
 import com.dre.brewery.Brew;
 import com.dre.brewery.api.BreweryApi;
-import com.dre.brewery.recipe.*;
 import com.dre.brewery.integration.item.BreweryPluginItem;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.Ingredient;
+import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +16,8 @@ import java.util.*;
 import static java.lang.Math.log;
 import static java.lang.Math.min;
 
-public class dataContractor {
+@SuppressWarnings("unused")
+public class DataContractor {
     public static @Nullable Brew getBrew(ItemStack item) {
         return Brew.get(item);
     }
@@ -25,14 +28,11 @@ public class dataContractor {
 
     public static @Nullable String getRecipeName(Brew brew) {
         BRecipe recipe = brew.getCurrentRecipe();
-        if (recipe != null) {
-            return recipe.getRecipeName();
-        }
-        return null;
+        return recipe == null ? null : recipe.getRecipeName();
     }
 
     public static double getAgingTime(Brew brew) {
-        return (double) brew.getAgeTime();
+        return brew.getAgeTime();
     }
 
     // 单位为分钟
@@ -41,14 +41,17 @@ public class dataContractor {
     }
 
     public static int getDistillRun(Brew brew) {
-        return (int) brew.getDistillRuns();
+        return brew.getDistillRuns();
     }
 
     // 如果不存在，那么 distill_time 就是0
     public static int getDistillTime(Brew brew) {
         int time = 0;
         BRecipe recipe = brew.getCurrentRecipe();
-        if (recipe == null) return time;
+        if (recipe == null) {
+            return time;
+        }
+
         return recipe.getDistillTime();
     }
 
@@ -59,19 +62,26 @@ public class dataContractor {
     /*
     DFS，会一直往下搜索寻找直到不可分的原版材料
     */
-    public static @Nullable HashMap<Material, Integer> getVanillaIng(Brew brew) {
+    public static HashMap<Material, Integer> getVanillaIng(Brew brew) {
         Queue<Tuple<Brew, Integer>> brewQueue = new ArrayDeque<>();
         HashMap<Material, Integer> materialMap = new HashMap<>();
         Set<String> visited = new HashSet<>();
         brewQueue.add(new Tuple<>(brew, 1));
+
         while (!brewQueue.isEmpty()) {
             Tuple<Brew, Integer> current = brewQueue.remove();
             Brew currentBrew = current.first();
             int brewAmount = current.second();
             BRecipe recipe = currentBrew.getCurrentRecipe();
-            if (recipe == null) continue;
+            if (recipe == null) {
+                continue;
+            }
+
             List<Ingredient> ingredients = getIngredients(currentBrew);
-            if (ingredients == null || !visited.add(recipe.getRecipeName())) continue;
+            if (ingredients == null || !visited.add(recipe.getRecipeName())) {
+                continue;
+            }
+
             for (Ingredient ingredient : ingredients) {
                 if (ingredient instanceof SimpleItem) {
                     Material material = ((SimpleItem) ingredient).getMaterial();
@@ -80,17 +90,21 @@ public class dataContractor {
                 } else if (ingredient instanceof BreweryPluginItem) {
                     String itemId = ((BreweryPluginItem) ingredient).getItemId();
                     BRecipe subrecipe = BRecipe.getById(itemId);
+
                     if (subrecipe == null) {
                         subrecipe = BRecipe.getMatching(itemId);
                     }
+
                     if (subrecipe == null) {
                         continue;
                     }
+
                     Brew item = BreweryApi.createBrew(subrecipe, 10);
                     brewQueue.add(new Tuple<>(item, ingredient.getAmount()));
                 }
             }
         }
+
         return materialMap;
     }
 
@@ -99,7 +113,10 @@ public class dataContractor {
         double ingredientPrice = 1.0;
         HashMap<Material, Integer> materialMap = getVanillaIng(brew);
         // 这里写一个 early-exit
-        if (materialMap == null || materialMap.isEmpty()) return ingredientPrice;
+        if (materialMap.isEmpty()) {
+            return ingredientPrice;
+        }
+
         BRecipe recipe = brew.getCurrentRecipe();
 
         // 顺手获取一下材料种类和个数
@@ -112,9 +129,13 @@ public class dataContractor {
             materialAmount += entry.getValue();
 
             // 不在价目表进下一次循环
-            if (priceTable.get(entry.getKey()) == null) continue;
+            if (priceTable.get(entry.getKey()) == null) {
+                continue;
+            }
+
             ingredientPrice += priceTable.get(entry.getKey()) * entry.getValue();
         }
+
         // 复杂度乘子
         double complexityAmplifier = (1.0 + 0.5 * log(1 + materialCount))
                 * (1.0 + 0.3 * log(1 + materialAmount));
